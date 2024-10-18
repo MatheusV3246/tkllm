@@ -103,10 +103,13 @@ class GravadorDeVoz:
 
     async def falar(self, texto):
         """Converter texto em fala e reproduzir o áudio gerado."""
-        arquivo_saida = self.texto_para_fala(texto)  # Cria um novo arquivo para cada resposta
-        if arquivo_saida:
-            await self.reproduzir_audio(arquivo_saida)  # Reproduz o novo arquivo
-            self.limpar_arquivos()  # Limpa arquivos não utilizados após a reprodução
+        if not self.esta_reproduzindo:  # Certifica-se de que não há outro áudio sendo reproduzido
+            arquivo_saida = self.texto_para_fala(texto)  # Cria um novo arquivo para cada resposta
+            if arquivo_saida:
+                await self.reproduzir_audio(arquivo_saida)  # Reproduz o novo arquivo
+                self.limpar_arquivos()  # Limpa arquivos não utilizados após a reprodução
+        else:
+            print("Outro áudio está sendo reproduzido. Aguarde o término para ouvir o próximo.")
 
     def texto_para_fala(self, texto):
         """Converter texto em um arquivo de áudio."""
@@ -150,9 +153,9 @@ class GravadorDeVoz:
             if arquivo.endswith('.mp3') and "saida" in arquivo:
                 try:
                     os.remove(caminho_arquivo)  # Limpar o arquivo temporário
-                    print(f"Arquivo removido: {caminho_arquivo}")
+                    print("")
                 except Exception:
-                    print(f"Erro ao remover o arquivo: {caminho_arquivo}")
+                    print("")
 
     def iniciar_nova_pergunta(self):
         """Iniciar uma nova pergunta."""
